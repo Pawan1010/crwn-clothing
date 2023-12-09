@@ -11,4 +11,4 @@ const CategoryMenu = ({categories}) => {
     )
 }
 
-export default CategoryMenu
+export default CategoryMenu 
