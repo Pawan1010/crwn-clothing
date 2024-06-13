@@ -16,6 +16,8 @@
     "react-scripts": "5.0.1",
     "sass": "^1.69.5",
     "sort-by": "^1.2.0",
+    "style-components": "^0.1.0",
+    "styled-components": "^6.1.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -42,5 +44,4 @@
       "last 1 safari version"
     ]
   }
-  
 }

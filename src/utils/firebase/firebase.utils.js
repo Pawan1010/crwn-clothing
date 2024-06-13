@@ -8,12 +8,17 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
+
 } from 'firebase/auth';
 import {
     getFirestore,
     doc,
     getDoc,
-    setDoc
+    setDoc,
+    collection,
+    writeBatch,
+    query, 
+    getDocs,
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -25,18 +30,47 @@ const firebaseConfig = {
     appId: "1:875850831602:web:cdcf15c64290825c12a26b"
   };
   
-  const firebase = initializeApp(firebaseConfig);
+  const firebaseApp = initializeApp(firebaseConfig);
 
-  const provider = new GoogleAuthProvider();
-  provider.getCustomParameters({
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.getCustomParameters({
     prompt: 'select_account'
   });
 
   export const auth = getAuth();
-  export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
-  export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider);
+
+  export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+  
+  export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
 
   export const db = getFirestore();
+
+  export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
+    const batch = writeBatch(db);
+    const collectionRef = collection(db, collectionKey);
+
+    objectsToAdd.forEach( async (object) => {
+      const docRef = doc(collectionRef, object.title.toLowerCase())
+      batch.set(docRef, object)
+    });
+
+    await batch.commit();
+    console.log('done')
+  }
+
+  export const getCategoresAndDocuments = async () => {
+    const collectionRef = collection(db, 'categories');
+    const q = query(collectionRef)
+
+    const querySnapshot = await getDocs(q);
+    const catergoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+      const {title, items} = docSnapshot.data();
+      acc[title.toLowerCase()] = items;
+      return acc;
+    }, {})
+
+    return catergoryMap;
+  }
 
   export const createUserDocumentFromAuth = async (userAuth, additonalInformation={}) => {
 
